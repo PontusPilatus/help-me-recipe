@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Help Me Recipe
+
+A modern recipe finder application that helps you discover delicious recipes based on the ingredients you have at home.
+
+## Features
+
+- Search recipes by ingredients
+- Filter by dietary restrictions (vegetarian, vegan, gluten-free, etc.)
+- Filter by cuisine type and meal type
+- Filter by cooking time
+- View detailed recipe information including:
+  - Nutritional information
+  - Step-by-step instructions
+  - Preparation time
+  - Serving size
+- Popular recipes showcase
+- Mobile-responsive design
+
+## Tech Stack
+
+- Frontend:
+  - Next.js
+  - TypeScript
+  - Tailwind CSS
+  - React Hooks
+
+- Backend:
+  - Node.js
+  - Express
+  - TypeScript
+  - Spoonacular API
 
 ## Getting Started
 
-First, run the development server:
-
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone [your-repo-url]
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+# Install frontend dependencies
+cd frontend
+npm install
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+# Install backend dependencies
+cd ../backend
+npm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. Set up environment variables:
+   - Create `.env` file in the backend directory
+   - Create `.env.local` file in the frontend directory
+   - Add your Spoonacular API key and other configuration
 
-## Learn More
+4. Start the development servers:
+```bash
+# Start backend server
+cd backend
+npm run dev
 
-To learn more about Next.js, take a look at the following resources:
+# Start frontend server (in a new terminal)
+cd frontend
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Environment Variables
 
-## Deploy on Vercel
+### Backend (.env)
+```
+PORT=3001
+SPOONACULAR_API_KEY=your_api_key_here
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Frontend (.env.local)
+```
+NEXT_PUBLIC_API_URL=http://localhost:3001/api
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
