@@ -44,49 +44,47 @@ router.get('/quota', async (req, res) => {
   }
 });
 
-// Get popular recipes
+// Get popular recipes with random offset
 router.get('/popular', async (req, res) => {
   try {
-    // Check cache first
-    if (cache.popular.data && isCacheValid(cache.popular.timestamp, cache.popular.TTL)) {
-      console.log('Serving popular recipes from cache');
-      return res.json(cache.popular.data);
-    }
-
     const response = await axios.get('https://api.spoonacular.com/recipes/random', {
       params: {
         apiKey: process.env.SPOONACULAR_API_KEY,
         number: 6,
         addRecipeInformation: true,
-        limitLicense: true
+        limitLicense: true,
       }
     });
 
-    // Update cache
-    cache.popular.data = response.data.recipes;
-    cache.popular.timestamp = Date.now();
+    const recipes = response.data.recipes.map((recipe: any) => ({
+      id: recipe.id,
+      title: recipe.title,
+      image: recipe.image,
+      readyInMinutes: recipe.readyInMinutes,
+      servings: recipe.servings,
+      sourceUrl: recipe.sourceUrl,
+      summary: recipe.summary,
+      instructions: recipe.analyzedInstructions?.[0]?.steps?.map((step: any) => ({
+        number: step.number,
+        step: step.step
+      })) || recipe.instructions?.split('\n').filter(Boolean).map((step: string, index: number) => ({
+        number: index + 1,
+        step: step.trim()
+      })) || []
+    }));
 
-    console.log('Spoonacular response:', {
-      status: response.status,
-      recipes_count: response?.data?.recipes?.length,
-      first_recipe: response?.data?.recipes?.[0]?.title
-    });
-
-    res.json(response.data.recipes);
+    res.json(recipes);
   } catch (error) {
     console.error('Error fetching popular recipes:', error);
     if (error instanceof AxiosError && error.response) {
-      console.error('Spoonacular error details:', {
+      console.error('Spoonacular API error:', {
         status: error.response.status,
         data: error.response.data
       });
+      res.status(error.response.status).json(error.response.data);
+    } else {
+      res.status(500).json({ error: 'Failed to fetch popular recipes' });
     }
-    // If error occurs and we have cached data, return it even if expired
-    if (cache.popular.data) {
-      console.log('Serving expired popular recipes from cache due to API error');
-      return res.json(cache.popular.data);
-    }
-    res.status(500).json({ error: 'Failed to fetch popular recipes' });
   }
 });
 
@@ -149,16 +147,23 @@ router.post('/search', async (req, res) => {
       }
     });
 
-    // Cache the recipe details we get from the search
-    const recipes = response.data.results;
-    recipes.forEach((recipe: any) => {
-      if (!cache.recipes.has(recipe.id.toString())) {
-        cache.recipes.set(recipe.id.toString(), {
-          data: recipe,
-          timestamp: Date.now()
-        });
-      }
-    });
+    // Transform the response to match our expected format
+    const recipes = response.data.results.map((recipe: any) => ({
+      id: recipe.id,
+      title: recipe.title,
+      image: recipe.image,
+      readyInMinutes: recipe.readyInMinutes,
+      servings: recipe.servings,
+      sourceUrl: recipe.sourceUrl,
+      summary: recipe.summary,
+      instructions: recipe.analyzedInstructions?.[0]?.steps?.map((step: any) => ({
+        number: step.number,
+        step: step.step
+      })) || recipe.instructions?.split('\n').filter(Boolean).map((step: string, index: number) => ({
+        number: index + 1,
+        step: step.trim()
+      })) || []
+    }));
 
     res.json(recipes);
   } catch (error) {
